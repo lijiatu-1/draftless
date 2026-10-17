@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Draftless 的应用图标。
+       1024 的画布里放一个 824 的圆角方块，四周留白（和 Windows 11 的图标网格一致）。
+       记号是首字母 D：左边那道竖拆成三道高低起伏的短竖（说话的波形），
+       右边一道半圆的碗把上下两头接起来，D 就成立了。
+       中间那道波用朱砂，和三个主题里"正在为你干活"的点睛色一致。
+       沿用"波形当笔画"这个装置：上一版验证过它在 256 和 16 像素下还认得出来。 -->
+  <rect x="100" y="100" width="824" height="824" rx="186" fill="#26313d" />
+  <rect x="238" y="368" width="62" height="352" rx="31" fill="#f7f4ed" />
+  <rect x="322" y="296" width="62" height="432" rx="31" fill="#c7563c" />
+  <rect x="406" y="344" width="62" height="384" rx="31" fill="#f7f4ed" />
+  <path d="M490 327a190 190 0 0 1 0 380" fill="none" stroke="#f7f4ed" stroke-width="62" stroke-linecap="round" />
+</svg>

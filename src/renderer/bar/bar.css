@@ -1,0 +1,341 @@
+/* 悬浮条：说话时屏幕底部的那一条。左边取消，中间是跟着声音向左流的声波，右边完成；上方一行提示。
+   它浮在任意应用、任意壁纸上面，所以用不透明的深色底，不跟随系统深浅色。
+   颜色由主题给（src/themes 里"悬浮条"那一组），字号、圆角、动效在 tokens.css。
+
+   这个窗口本身点不到（鼠标事件全部穿过去，见 src/app/main.mjs），两个按钮的点击是原生小帮手截下来再转给页面的，
+   所以这里没有悬停和按下的样式。画成什么样由 body 上的三个属性定，都是 bar-ui.mjs 设的：
+     data-view      现在是哪种样子（starting / recording / finishing / done / notice / error）
+     data-shown     条在不在屏幕上
+     data-controls  两个按钮点不点得动（点击拦截那把钩子没装上时点不动，就不画出来） */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  overflow: hidden;
+  user-select: none;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  /* 窗口贴着屏幕可用区域的底边放。条离底边这么远，这段空也是留给阴影的地方 */
+  padding-bottom: 28px;
+  font: var(--text-small) / 1.35 var(--font);
+  color: var(--bar-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+.shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+/* 出现：从下面浮上来。消失：淡出去，淡完由脚本把窗口收起来 */
+body[data-shown="true"] .shell {
+  animation: rise var(--dur-slow) var(--ease-out);
+}
+
+body[data-shown="false"] .shell {
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ---------- 上方的一行提示 ---------- */
+
+.hint {
+  margin: 0;
+  padding: 3px 10px;
+  color: var(--bar-muted);
+  background: var(--bar-surface);
+  border-radius: var(--radius-full);
+  box-shadow: 0 0 0 1px var(--bar-edge);
+  font-size: var(--text-micro);
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.hint:empty {
+  display: none;
+}
+
+/* 键名：用和正文一样的字体，等宽字体里 "Right Alt" 这样的键名又窄又挤 */
+.hint kbd {
+  font: inherit;
+  font-weight: 600;
+  color: var(--bar-ink);
+}
+
+/* ---------- 条 ---------- */
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 40px;
+  padding: 6px;
+  background: var(--bar-surface);
+  /* 一行高时正好是两头全圆；报错写成两行时是圆角矩形 */
+  border-radius: 20px;
+  box-shadow:
+    0 0 0 1px var(--bar-edge),
+    0 6px 18px oklch(0 0 0 / 0.3),
+    0 2px 5px oklch(0 0 0 / 0.2);
+}
+
+.control {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  transition:
+    opacity var(--dur-base) var(--ease-out),
+    transform var(--dur-base) var(--ease-out);
+}
+
+.control svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.cancel {
+  color: var(--bar-ink);
+  background: var(--bar-ghost);
+}
+
+.confirm {
+  color: var(--bar-on-go);
+  background: var(--bar-go);
+}
+
+body[data-controls="false"] .control {
+  display: none;
+}
+
+body[data-controls="false"] .bar {
+  padding-inline: 14px;
+}
+
+/* ---------- 中间：声波、整理中的波、完成的勾，叠在同一块地方，按样子换着显示 ---------- */
+
+.mid {
+  position: relative;
+  flex: none;
+  width: 76px;
+  height: 22px;
+}
+
+.mid > * {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--dur-base) var(--ease-out);
+}
+
+.wave,
+.think {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wave i,
+.think i {
+  flex: none;
+  height: 100%;
+  border-radius: 2px;
+}
+
+/* 声波：竖条原地不动，字从中间激起一道波传到两边（wave.mjs）。每帧都重画，不要过渡，
+   过渡会把一帧一帧的抖动抹平。改高度不用 scaleY：压扁了圆头就没了，伏着时该是一排小圆点 */
+.wave {
+  gap: 2px;
+}
+
+.wave i {
+  --h: 0.1;
+  width: 2px;
+  height: calc(var(--h) * 100%);
+  min-height: 2px;
+  border-radius: 1px;
+  background: var(--bar-live);
+}
+
+.think {
+  gap: 3px;
+}
+
+.think i {
+  --i: 0;
+  width: 3px;
+  background: var(--bar-working);
+  transform: scaleY(0.2);
+}
+
+.tick path {
+  fill: none;
+  stroke: var(--bar-go);
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+}
+
+/* 打开麦克风：还没有声音，竖条都伏着，轻轻一明一暗；"完成"先暗着，这时点不动 */
+body[data-view="starting"] .wave,
+body[data-view="recording"] .wave {
+  opacity: 1;
+}
+
+body[data-view="starting"] .wave {
+  animation: breathe 1s var(--ease-out) infinite alternate;
+}
+
+body[data-view="starting"] .confirm {
+  opacity: 0.35;
+}
+
+@keyframes breathe {
+  from {
+    opacity: 0.3;
+  }
+}
+
+/* 整理中：两个按钮退场（这时已经取消不了），中间换成一道匀速滚过的波 */
+body[data-view="finishing"] .think {
+  opacity: 1;
+}
+
+body[data-view="finishing"] .think i {
+  animation: think 1.15s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -90ms);
+}
+
+@keyframes think {
+  50% {
+    transform: scaleY(0.78);
+  }
+}
+
+body[data-view="finishing"] .control,
+body[data-view="done"] .control {
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+/* 完成：打一个勾，随后整条消失 */
+body[data-view="done"] .tick {
+  opacity: 1;
+}
+
+body[data-view="done"] .tick path {
+  animation: draw 380ms var(--ease-out) forwards;
+}
+
+@keyframes draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ---------- 提示和出错：整条换成一句话 ---------- */
+
+.message {
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 300px;
+  padding: 0 10px;
+}
+
+.message span {
+  /* 可能是一整句话：最多两行，再长就截断 */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-wrap: balance;
+}
+
+.warning {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: var(--bar-problem);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body[data-view="notice"] .bar > :not(.message),
+body[data-view="error"] .bar > :not(.message) {
+  display: none;
+}
+
+body[data-view="notice"] .message,
+body[data-view="error"] .message {
+  display: flex;
+  animation: appear var(--dur-base) var(--ease-out);
+}
+
+body[data-view="notice"] .warning {
+  display: none;
+}
+
+/* 系统开了"减弱动态效果"：不位移、不缩放、不滚动，只留明暗的变化。声波照样跟着声音动，只是画得慢（bar-ui.mjs） */
+@media (prefers-reduced-motion: reduce) {
+  body[data-shown="true"] .shell {
+    animation: appear var(--dur-base) linear;
+  }
+
+  .control {
+    transition: none;
+  }
+
+  body[data-view="finishing"] .think {
+    animation: breathe 1.2s linear infinite alternate;
+  }
+
+  body[data-view="finishing"] .think i {
+    animation: none;
+    transform: scaleY(0.45);
+  }
+
+  body[data-view="done"] .tick path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+}

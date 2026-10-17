@@ -1,0 +1,399 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Draftless · 按一下说话，字就出现在你在打字的框里</title>
+    <meta
+      name="description"
+      content="Windows 上的开源语音输入。按一下热键说话，整理好的文字贴进你正在打字的框里。用自己的模型 key，不经过中间服务器。"
+    />
+    <meta property="og:title" content="Draftless · 说话，字就贴进那个框里。" />
+    <meta
+      property="og:description"
+      content="Windows 上的开源语音输入。删掉口头禅，合并重复，听懂改口，再贴进你正在打字的框里。"
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="assets/icon.svg" />
+    <link rel="stylesheet" href="site.css" />
+  </head>
+  <body>
+    <header class="top">
+      <a class="wordmark" href="#top">Draftless</a>
+      <nav>
+        <a href="#demo">看它删什么</a>
+        <a href="#how">按两下</a>
+        <a href="#numbers">实测</a>
+        <a href="#faq">会先问到的</a>
+      </nav>
+      <a class="top-action" href="https://github.com/lijiatu-1/draftless">GitHub</a>
+    </header>
+
+    <main id="top">
+      <!-- 首屏：产品在自己干活。悬浮条是真片段，点它会演一遍真的两下 -->
+      <section class="hero">
+        <h1 class="mask">
+          <span class="line"><span>说话，</span></span>
+          <span class="line"><span>字就贴进那个框里。</span></span>
+        </h1>
+        <p class="lede rise">
+          Windows 上的开源语音输入。它删掉口头禅，合并重复，听懂你中途的改口，再按你打字的习惯排好版。
+        </p>
+        <div class="actions rise">
+          <a
+            class="btn"
+            href="https://github.com/lijiatu-1/draftless/releases/latest/download/Draftless-win32-x64.zip"
+            >下载 Windows 版 · 267 MB</a
+          >
+          <a class="text" href="https://github.com/lijiatu-1/draftless/releases/latest">版本说明 →</a>
+        </div>
+
+        <div class="stage rise">
+          <button class="bar" id="bar" type="button" data-ui aria-label="悬浮条示例：点一下，看它把一句口语整理成一句书面语">
+            <span class="dot" aria-hidden="true"></span>
+            <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="bar-key">右 Alt 结束</span>
+          </button>
+          <p class="bar-said" id="bar-said" aria-live="polite"></p>
+          <p class="bar-wrote" id="bar-wrote" hidden>咱们晨会能不能改到九点半？</p>
+          <p class="stage-hint">
+            点一下那条悬浮条，它就在你面前演一遍：按一下开始，再按一下，字就进去了。
+            <button class="again" id="again" type="button">再演一次</button>
+          </p>
+        </div>
+      </section>
+
+      <!-- 说 / 写 / 删掉的部分：整页的主张做成一个能动手的面板 -->
+      <section class="show" id="demo">
+        <h2 class="rise">它删了什么，你看得见</h2>
+        <p class="sec-lede rise">下面三条都是真录音的原文和成品。换一条，切回原文，或者让它把删掉的部分划给你看。</p>
+
+        <div class="panel rise">
+          <div class="panel-demo">
+            <div class="take" data-take="a">
+              <p class="said">
+                <s>那个，</s>咱们晨会能不能<s>，呃，</s>改到九点？<s>就是……啊不对，</s>九点我其实不太行<s>，那个，</s>还是改到九点半吧。
+              </p>
+              <p class="wrote">咱们晨会能不能改到九点半？</p>
+            </div>
+            <div class="take" data-take="b" hidden>
+              <p class="said">
+                你好小明，我换新号码了，是13812345678。<s>哦对，</s>小明是黄晓明的晓明。
+              </p>
+              <p class="wrote">你好，晓明，我换新号码了，是 138 1234 5678。</p>
+            </div>
+            <div class="take" data-take="c" hidden>
+              <p class="said">
+                周五出门前先网上值机，然后收拾行李箱，再把停车位订了。<s>停车位得先订，车位老是一下就没了。</s>
+              </p>
+              <p class="wrote">
+                周五出门前还有几件事：1. 先订机场停车位（得先订，车位老是一下就没了） 2. 提前网上值机 3. 收拾行李
+              </p>
+            </div>
+            <a class="panel-link" href="https://github.com/lijiatu-1/draftless/blob/main/docs/verification.md"
+              >这三条的成品来自 2026-10-17 的实测记录</a
+            >
+          </div>
+
+          <div class="panel-ctl" data-ui>
+            <p class="ctl-group">录音</p>
+            <label class="ctl-row"><input type="radio" name="take" value="a" checked /><span>晨会改时间 · 9 秒</span></label>
+            <label class="ctl-row"><input type="radio" name="take" value="b" /><span>换号码 · 8 秒</span></label>
+            <label class="ctl-row"><input type="radio" name="take" value="c" /><span>出门前 · 12 秒</span></label>
+            <p class="ctl-group">看哪一面</p>
+            <label class="ctl-row"><input type="radio" name="view" value="both" checked /><span>对照</span></label>
+            <label class="ctl-row"><input type="radio" name="view" value="said" /><span>你说的</span></label>
+            <label class="ctl-row"><input type="radio" name="view" value="wrote" /><span>它写的</span></label>
+            <label class="ctl-row ctl-check">
+              <input type="checkbox" id="showcut" checked /><span>把删掉的部分划出来</span>
+            </label>
+          </div>
+        </div>
+        <p class="under-panel rise">点右边的控件，左边立刻变。划掉的字就是它替你省掉的。</p>
+      </section>
+
+      <!-- 仪式：按两下。三问三答，最后一答冲出栏宽 -->
+      <section class="how" id="how">
+        <h2 class="rise">按两下</h2>
+
+        <div class="exchange rise">
+          <p class="ex-say">先按一下热键。</p>
+          <p class="ex-call">右 Alt。也可以是右 Ctrl、右 Shift、右 Win，设置里改。</p>
+          <div class="bar ex-bar" data-ui>
+            <span class="dot" aria-hidden="true"></span>
+            <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="bar-key">右 Alt 结束</span>
+          </div>
+        </div>
+
+        <div class="exchange rise">
+          <p class="ex-say">然后随便说。</p>
+          <p class="ex-call">口头禅、改口、说两遍，都不用管。你想怎么说就怎么说。</p>
+          <div class="ex-live" data-ui>
+            <span class="dot live" aria-hidden="true"></span>
+            <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+            <span class="ex-live-text">那个，咱们晨会能不能，呃，改到九点……</span>
+          </div>
+        </div>
+
+        <div class="exchange rise">
+          <p class="ex-say">再按一下，字就进去了。</p>
+          <p class="ex-call">1 到 3 秒后，整理好的那句贴进你刚才正在打字的框。说的还是说的，写的已经是写的。</p>
+          <div class="ex-wide" data-ui>
+            <p class="ex-wide-title">记事本 · 会议.txt</p>
+            <p class="ex-wide-body">咱们晨会能不能改到九点半？<span class="caret" aria-hidden="true"></span></p>
+          </div>
+        </div>
+
+        <figure class="side-art rise">
+          <img
+            src="assets/vienna-dictaphone-vintage-recorder-0174.jpg"
+            width="1920"
+            height="2883"
+            alt="一台老式口述录音机：玳瑁色的喇叭朝上，金属软管绕到漆黑的机身上"
+            loading="lazy"
+          />
+          <figcaption>一百年前，"说话变文字"是一台带喇叭的机器：对着喇叭说，声音刻在蜡筒上，再有人抄成字。</figcaption>
+        </figure>
+      </section>
+
+      <!-- 能力一：上下文。真截图，裁到能读 -->
+      <section class="split">
+        <div class="split-say rise">
+          <h2>它知道你在写什么</h2>
+          <p>
+            开口的那一刻，它读一眼你光标前面已经写好的字，最多 500 字，74 毫秒读完。所以在代码编辑器里它不给你加句号，
+            在邮件里它分成称呼、正文、落款，在聊天框里它就是一句话。读不到也不要紧，那时它按普通段落来。
+          </p>
+        </div>
+        <div class="split-ctx rise" data-ui>
+          <p class="ctx-line">老师您好，关于下周的例会，我想<span class="caret" aria-hidden="true"></span></p>
+          <p class="ctx-note">读到光标前 18 字 · 74 毫秒 · 读完就用，不存盘</p>
+        </div>
+      </section>
+
+      <!-- 能力二：数据只在这台机器。用产品自己的目录清单当图 -->
+      <section class="split flip">
+        <div class="split-say rise">
+          <h2>不用交出自己的话</h2>
+          <p>
+            没有账号，没有中间服务器，没有统计上报。key 用当前用户的 DPAPI 加密，只存在这台机器上；
+            请求直接发给你自己选的那家模型，中间没有我们。删掉下面这个目录，就干净了。
+          </p>
+        </div>
+        <div class="split-dir rise" data-ui>
+          <p class="dir-head">%USERPROFILE%\.draftless</p>
+          <p class="dir-row"><span>data\Recordings\</span><span>你的录音，只在这</span></p>
+          <p class="dir-row"><span>data\history.db</span><span>历史，只记长度不记内容</span></p>
+          <p class="dir-row"><span>qwen-key.bin</span><span>DPAPI 加密，146 字节</span></p>
+          <p class="dir-row"><span>logs\main.log</span><span>只有耗时和字数</span></p>
+        </div>
+      </section>
+
+      <!-- 实测数字：两端行，右端是带表格数字的值 -->
+      <section class="nums" id="numbers">
+        <h2 class="rise">实测的数字</h2>
+        <p class="sec-lede rise">都是 2026-10-17 拿真实录音跑出来的，不是估的。没测过的写在最后一组。</p>
+        <div class="rows rise">
+          <p class="row-group">速度</p>
+          <p class="row"><span>听写一条 33 秒的录音</span><span class="val">1.4–2.4 秒</span></p>
+          <p class="row"><span>加上整理，从说完到贴进去</span><span class="val">3–5 秒</span></p>
+          <p class="row"><span>读光标前的上下文</span><span class="val">74 毫秒</span></p>
+          <p class="row"><span>听写那一步产生的思考 token</span><span class="val">0</span></p>
+          <p class="row-group">成本</p>
+          <p class="row"><span>一次听写（Qwen，33 秒录音）</span><span class="val">¥0.014</span></p>
+          <p class="row"><span>安装包</span><span class="val">267 MB</span></p>
+          <p class="row"><span>单测加安装测试</span><span class="val">784 + 6 全过</span></p>
+          <p class="row-group">还没测的</p>
+          <p class="row"><span>本地模型在 Windows 上的速度和准确率</span><span class="val">没测过</span></p>
+          <p class="row"><span>管理员权限的窗口</span><span class="val">贴不进，字留在剪贴板</span></p>
+        </div>
+
+        <figure class="side-art rise">
+          <img
+            src="assets/stenograph-1a-miles-bartholomew.jpg"
+            width="1920"
+            height="1614"
+            alt="一台木底速记机：纸卷立在一侧，十几个圆键扇形排开"
+            loading="lazy"
+          />
+          <figcaption>速记机把一句话压成一次按键，抄写员事后再展开成句子。听和写分开，一百年前就是这样。</figcaption>
+        </figure>
+      </section>
+
+      <!-- FAQ：填充瓦片，一次开一个 -->
+      <section class="faq" id="faq">
+        <h2 class="faq-head">几个会先问到的</h2>
+        <div class="faq-list">
+          <details name="faq">
+            <summary>要花钱吗？</summary>
+            <p>
+              程序免费，MIT 许可。模型按用量付费，用你自己的 key。Qwen 国内直连、不用代理，一次听写几分钱；
+              Gemini 有免费额度，但要能访问 Google。
+            </p>
+          </details>
+          <details name="faq">
+            <summary>贴不进去怎么办？</summary>
+            <p>
+              管理员权限的窗口，Windows 不允许低权限程序往里发按键。这种时候文字会留在剪贴板里，
+              它会提示你按 Ctrl+V。不会让你白说一遍。
+            </p>
+          </details>
+          <details name="faq">
+            <summary>说得又快又乱，能行吗？</summary>
+            <p>它就是为这个做的。改口、重复、说到一半又推翻，这些都留在录音里，交给整理那一步。你只管把话说出来。</p>
+          </details>
+          <details name="faq">
+            <summary>支持别的语言吗？</summary>
+            <p>中英混说保持原样，界面中英双语。整理规则是照着中文口语调的，英文能用但没专门调过。</p>
+          </details>
+          <details name="faq">
+            <summary>怎么装？</summary>
+            <p>
+              去 Releases 页面下载 Draftless-win32-x64.zip，解压，右键 install.ps1 用 PowerShell 运行。
+              不用管理员权限，不往系统目录写东西。升级只覆盖程序目录，你的设置和历史不动。
+            </p>
+          </details>
+        </div>
+      </section>
+
+      <!-- 结尾：第一次启动的那一屏已经开着 -->
+      <section class="end">
+        <div class="end-say">
+          <h2>试一下。</h2>
+          <p>下载、解压、右键跑一次 install.ps1。第一次启动就是右边这一屏：选一家模型，填 key，试麦克风。</p>
+          <a
+            class="btn"
+            href="https://github.com/lijiatu-1/draftless/releases/latest/download/Draftless-win32-x64.zip"
+            >下载 Windows 版 · 267 MB</a
+          >
+        </div>
+        <div class="end-dlg rise" data-ui>
+          <p class="dlg-title">先接上模型</p>
+          <div class="dlg-vendors"><span>Gemini</span><span>OpenAI</span><span class="on">Qwen</span></div>
+          <p class="dlg-row"><span>key</span><span class="dlg-key">sk-••••••••••••••••</span></p>
+          <p class="dlg-note">key 用当前用户的 DPAPI 加密，只存在这台机器。第一次启动就是这一屏。</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <div class="foot-row">
+        <div class="tile tile-say">
+          <p class="tile-line">你说的话，只到你选的那家模型为止。</p>
+          <p class="tile-legal">Draftless · MIT 许可 · 0.1.0</p>
+        </div>
+        <nav class="tile tile-nav" aria-label="页内">
+          <a href="#demo">看它删什么</a>
+          <a href="#how">按两下</a>
+          <a href="#numbers">实测</a>
+          <a href="#faq">会先问到的</a>
+        </nav>
+        <div class="tile tile-time">
+          <p>这台机器上</p>
+          <p class="tile-clock" id="clock">--:--</p>
+        </div>
+        <div class="tile tile-mail">
+          <a href="https://github.com/lijiatu-1/draftless/issues">有问题，开一个 issue</a>
+        </div>
+      </div>
+      <div class="foot-row">
+        <div class="tile tile-mark">Draftless</div>
+        <a class="tile tile-go" href="https://github.com/lijiatu-1/draftless/releases/latest">
+          <span>去拿最新版</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h14M12 5l7 7-7 7" /></svg>
+        </a>
+      </div>
+      <p class="credits">
+        图片：<a href="https://commons.wikimedia.org/w/index.php?curid=146775419">"Stenograph 1a, Miles Bartholomew"</a> by
+        Martin Howard, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>, via Wikimedia Commons；
+        <a href="https://commons.wikimedia.org/w/index.php?curid=23403850">"Vienna - Dictaphone, vintage recorder - 0174"</a>
+        by Jorge Royan, <a href="https://creativecommons.org/licenses/by-sa/3.0/">CC BY-SA 3.0</a>, via Wikimedia Commons。
+      </p>
+    </footer>
+
+    <script>
+      // 首屏的悬浮条：演一遍真的两下。只用 opacity / transform / 文本，减少动效时直接给成品
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const SAID = "那个，咱们晨会能不能，呃，改到九点？就是……啊不对，九点我其实不太行，那个，还是改到九点半吧。";
+      const bar = document.getElementById("bar");
+      const saidEl = document.getElementById("bar-said");
+      const wroteEl = document.getElementById("bar-wrote");
+      let timer = 0;
+
+      function perform() {
+        clearInterval(timer);
+        bar.classList.add("live");
+        wroteEl.hidden = true;
+        saidEl.hidden = false;
+        saidEl.classList.remove("done");
+        saidEl.textContent = "";
+        if (reduced) {
+          finish();
+          return;
+        }
+        let i = 0;
+        timer = setInterval(() => {
+          i += 2;
+          saidEl.textContent = SAID.slice(0, i);
+          if (i >= SAID.length) finish();
+        }, 40);
+      }
+      function finish() {
+        clearInterval(timer);
+        bar.classList.remove("live");
+        saidEl.textContent = SAID;
+        saidEl.classList.add("done");
+        saidEl.hidden = false;
+        wroteEl.hidden = false;
+      }
+      bar.addEventListener("click", perform);
+      document.getElementById("again").addEventListener("click", perform);
+
+      // 说 / 写 / 划掉：面板里的三个控件改同一份真内容
+      const panel = document.querySelector(".panel");
+      panel.addEventListener("change", (event) => {
+        const take = panel.querySelector('input[name="take"]:checked').value;
+        const view = panel.querySelector('input[name="view"]:checked').value;
+        const cut = document.getElementById("showcut").checked;
+        for (const block of panel.querySelectorAll(".take")) block.hidden = block.dataset.take !== take;
+        const active = panel.querySelector(`.take[data-take="${take}"]`);
+        active.querySelector(".said").hidden = !(view === "said" || view === "both");
+        active.querySelector(".wrote").hidden = !(view === "wrote" || view === "both");
+        active.classList.toggle("cut", cut);
+      });
+      panel.dispatchEvent(new Event("change"));
+
+      // 滚到才进场：标题先，文字后，图再后。脚本失败时内容本来就在
+      const rises = document.querySelectorAll(".rise");
+      if (reduced || !("IntersectionObserver" in window)) {
+        for (const el of rises) el.classList.add("in");
+        document.querySelector(".mask").classList.add("in");
+      } else {
+        const seen = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (!entry.isIntersecting) continue;
+              entry.target.classList.add("in");
+              seen.unobserve(entry.target);
+            }
+          },
+          { rootMargin: "0px 0px -10% 0px", threshold: 0.1 },
+        );
+        for (const el of rises) seen.observe(el);
+        requestAnimationFrame(() => document.querySelector(".mask").classList.add("in"));
+      }
+
+      // 页脚那块本地时间
+      const clock = document.getElementById("clock");
+      const tick = () => {
+        clock.textContent = new Date().toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
+      };
+      tick();
+      setInterval(tick, 20000);
+
+      // 首屏演一遍，等字和按钮都进场了再演
+      setTimeout(perform, reduced ? 0 : 900);
+    </script>
+  </body>
+</html>

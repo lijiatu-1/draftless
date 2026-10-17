@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="236 278 477 477">
+  <!-- 托盘图标：应用图标里那个 D 照原样取出来，只留单色、留白。
+       Windows 的托盘不会替图标反色（macOS 的 Template 图片会），所以这个图形必须是**浅色**：
+       make-icon.mjs 会在它下面垫一块近黑的底，于是深色任务栏上是白线、
+       浅色任务栏上是一块有边界的深色方块，两边都看得见。写成深色就会融进深色任务栏里（踩过）。 -->
+  <rect x="238" y="368" width="62" height="352" rx="31" fill="#f7f4ed" />
+  <rect x="322" y="296" width="62" height="432" rx="31" fill="#f7f4ed" />
+  <rect x="406" y="344" width="62" height="384" rx="31" fill="#f7f4ed" />
+  <path d="M490 327a190 190 0 0 1 0 380" fill="none" stroke="#f7f4ed" stroke-width="62" stroke-linecap="round" />
+</svg>

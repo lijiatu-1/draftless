@@ -1,0 +1,21 @@
+node_modules/
+dist/
+# 只忽略根目录那个 build/（原版放产物的），不要匹配 scripts/build/——那里是打包脚本
+/build/
+*.log
+
+# 本机的机器信息、发布用的密钥
+.machine.env
+.machine.env.*
+!.machine.env.example
+
+# 系统和编辑器的
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# 设计技能的本地工作文件：截图、度量报告、方向单，只在本人机器上有意义
+.taste/
+.taste-skill/

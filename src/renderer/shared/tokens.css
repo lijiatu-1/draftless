@@ -1,0 +1,37 @@
+/* 三个页面共用、不随主题变的 token：字、间距、圆角、动效。
+   颜色不在这里：那是主题的事（src/themes），由预加载脚本赶在页面画出来之前注入。 */
+
+:root {
+  --font: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "Cascadia Mono", "Cascadia Code", Consolas, ui-monospace, monospace;
+  /* 大号的数字原本用系统的圆体（macOS 的 SF Pro Rounded，ui-rounded）：Windows 没有对应的字体，
+     硬凑一套圆体只会和正文不是一家，所以这里直接跟 --font 一样 */
+  --font-rounded: "Segoe UI Variable Text", "Segoe UI", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+
+  /* 字号：22 标题、18 小标题、15 正文、13 说明和按钮、11 键名 */
+  --text-title: 1.375rem;
+  --text-heading: 1.125rem;
+  --text-body: 0.9375rem;
+  --text-small: 0.8125rem;
+  --text-micro: 0.6875rem;
+
+  /* 间距：4、8、12、16、24、32、48 */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  /* 圆角：按钮和输入框、窗口里的区块、悬浮条 */
+  --radius-control: 6px;
+  --radius-block: 10px;
+  --radius-full: 999px;
+
+  /* 动效：按下和悬停这类小反馈、状态切换、出现和消失。先快后慢，不回弹 */
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --ease-out: cubic-bezier(0.25, 1, 0.5, 1);
+}

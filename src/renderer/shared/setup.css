@@ -1,0 +1,143 @@
+/* 填 key、选哪家、权限那几行：主窗口的设置和首次引导共用（shared/key-panel.mjs、setup-text.mjs）。颜色由主题给。 */
+
+.hint {
+  margin-top: 0.75rem;
+  max-width: 34rem;
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+/* 用哪家：一家一个按钮，按下的那个是现在看着的 */
+.providers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.9rem;
+}
+
+.provider {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 9rem;
+  padding: 0.6rem 0.9rem;
+  font: inherit;
+  line-height: 1.4;
+  text-align: left;
+  color: var(--ink);
+  background: var(--bg);
+  border: none;
+  border-radius: 0.75rem;
+  box-shadow: 0 0 0 1px var(--border);
+  cursor: pointer;
+  transition: box-shadow var(--dur-base) var(--ease-out);
+}
+
+.provider:hover {
+  background: var(--raised);
+}
+
+.provider[aria-checked="true"] {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.provider:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+.provider-name {
+  font-weight: 600;
+}
+
+.provider-in-use {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--ok);
+}
+
+.state[data-tone="ok"],
+.granted[data-tone="ok"] {
+  color: var(--ok);
+}
+
+.state[data-tone="problem"],
+.granted[data-tone="problem"] {
+  color: var(--problem);
+}
+
+.check-result {
+  margin: 0.4rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+.check-result[data-tone="ok"] {
+  color: var(--ok);
+}
+
+.check-result[data-tone="problem"] {
+  color: var(--problem);
+}
+
+.key-state-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  font-size: 0.875rem;
+}
+
+.key-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.key-form .input {
+  flex: 1 1 14rem;
+}
+
+#key-problem {
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 0.75rem;
+}
+
+.permissions {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.permissions li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.granted {
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.granted[data-tone="problem"] {
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .provider {
+    transition: none;
+  }
+}

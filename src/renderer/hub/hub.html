@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'" />
+    <title>Draftless</title>
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/window.css" />
+    <link rel="stylesheet" href="../shared/setup.css" />
+    <link rel="stylesheet" href="hub.css" />
+  </head>
+  <body>
+    <!-- 图标：lucide（ISC 许可），线宽 2，跟着字的颜色走 -->
+    <svg class="sprite" aria-hidden="true">
+      <symbol id="i-home" viewBox="0 0 24 24">
+        <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
+        <path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      </symbol>
+      <symbol id="i-history" viewBox="0 0 24 24">
+        <path d="M3 12a9 9 0 1 0 9-9a9.75 9.75 0 0 0-6.74 2.74L3 8" />
+        <path d="M3 3v5h5m4-1v5l4 2" />
+      </symbol>
+      <symbol id="i-settings" viewBox="0 0 24 24">
+        <path
+          d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0a2.34 2.34 0 0 0 3.319 1.915a2.34 2.34 0 0 1 2.33 4.033a2.34 2.34 0 0 0 0 3.831a2.34 2.34 0 0 1-2.33 4.033a2.34 2.34 0 0 0-3.319 1.915a2.34 2.34 0 0 1-4.659 0a2.34 2.34 0 0 0-3.32-1.915a2.34 2.34 0 0 1-2.33-4.033a2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"
+        />
+        <circle cx="12" cy="12" r="3" />
+      </symbol>
+      <symbol id="i-sliders" viewBox="0 0 24 24">
+        <path d="M10 5H3m9 14H3M14 3v4m2 10v4m5-9h-9m9 7h-5m5-14h-7m-6 5v4m0-2H3" />
+      </symbol>
+      <symbol id="i-key" viewBox="0 0 24 24">
+        <path
+          d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"
+        />
+        <circle cx="16.5" cy="7.5" r=".5" />
+      </symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24">
+        <path
+          d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"
+        />
+        <path d="m9 12l2 2l4-4" />
+      </symbol>
+      <symbol id="i-info" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 16v-4m0-4h.01" />
+      </symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" />
+        <path d="M12 8v4m0 4h.01" />
+      </symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24">
+        <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+      </symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12" /></symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m15 18l-6-6l6-6" /></symbol>
+    </svg>
+
+    <div class="app">
+      <aside class="sidebar">
+        <p class="brand"><img src="../../../assets/icon.svg" alt="" width="22" height="22" />Draftless</p>
+        <nav data-i18n-aria-label="hub.pages">
+          <ul class="nav">
+            <li>
+              <button type="button" class="nav-item" data-route="home">
+                <svg class="icon" aria-hidden="true"><use href="#i-home" /></svg><span data-i18n="hub.home">Home</span>
+              </button>
+            </li>
+            <li>
+              <button type="button" class="nav-item" data-route="history">
+                <svg class="icon" aria-hidden="true"><use href="#i-history" /></svg><span data-i18n="hub.history">History</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+        <div class="sidebar-foot">
+          <button type="button" class="icon-button" id="open-settings" data-i18n-aria-label="hub.settings" data-i18n-title="hub.settings">
+            <svg class="icon" aria-hidden="true"><use href="#i-settings" /></svg>
+          </button>
+          <button type="button" class="icon-button" id="open-about" data-i18n-aria-label="hub.about" data-i18n-title="hub.about">
+            <svg class="icon" aria-hidden="true"><use href="#i-info" /></svg>
+          </button>
+        </div>
+      </aside>
+
+      <main class="content">
+        <div class="banner" id="banner" role="status" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-alert" /></svg>
+          <p class="banner-text" id="banner-text"></p>
+          <button type="button" class="button" id="banner-action" data-i18n="hub.fix">Settings</button>
+        </div>
+
+        <!-- 首页：原版"洞察"那一列，加上我们的花费；右边一列是口述卡和版本 -->
+        <section class="page" data-route="home" aria-labelledby="home-title">
+          <h1 class="page-title" id="home-title" data-i18n="home.title">Speak, don't type</h1>
+          <div class="home">
+            <div class="insights">
+              <div class="card stats">
+                <div class="stat">
+                  <p class="stat-value" id="stat-words"></p>
+                  <p class="stat-label" data-i18n="home.words">Words</p>
+                </div>
+                <div class="stat">
+                  <p class="stat-value" id="stat-saved"></p>
+                  <p class="stat-label" data-i18n="home.saved">Time saved</p>
+                </div>
+                <div class="stat">
+                  <p class="stat-value" id="stat-speed"></p>
+                  <p class="stat-label" data-i18n="home.speed">Speed</p>
+                </div>
+                <div class="stat">
+                  <p class="stat-value" id="stat-time"></p>
+                  <p class="stat-label" data-i18n="home.time">Dictation time</p>
+                </div>
+              </div>
+
+              <div class="card activity">
+                <div class="streaks">
+                  <div>
+                    <p class="stat-value" id="stat-active"></p>
+                    <p class="stat-label" data-i18n="home.active">Active</p>
+                  </div>
+                  <div>
+                    <p class="stat-value" id="stat-current"></p>
+                    <p class="stat-label" data-i18n="home.streak">Streak</p>
+                  </div>
+                  <div>
+                    <p class="stat-value" id="stat-longest"></p>
+                    <p class="stat-label" data-i18n="home.longest">Longest</p>
+                  </div>
+                </div>
+                <div class="heatmap" id="heatmap">
+                  <!-- 星期几的简写由 home.mjs 按界面语言填 -->
+                  <div class="weekdays" id="heatmap-weekdays" aria-hidden="true"></div>
+                  <div class="cells" id="heatmap-cells" role="img" data-i18n-aria-label="home.activity"></div>
+                  <button type="button" class="page-arrow" id="heatmap-back" data-i18n-aria-label="home.earlier">
+                    <svg class="icon" aria-hidden="true"><use href="#i-chevron" /></svg>
+                  </button>
+                  <div class="months" id="heatmap-months" aria-hidden="true"></div>
+                  <button type="button" class="page-arrow next" id="heatmap-next" data-i18n-aria-label="home.later">
+                    <svg class="icon" aria-hidden="true"><use href="#i-chevron" /></svg>
+                  </button>
+                </div>
+                <p class="legend" aria-hidden="true">
+                  <span data-i18n="home.less">Less</span><span class="cell" data-level="1"></span
+                  ><span class="cell" data-level="2"></span><span class="cell" data-level="3"></span
+                  ><span class="cell" data-level="4"></span><span data-i18n="home.more">More</span>
+                </p>
+              </div>
+
+              <!-- 花费：选一段时间，按模型分开列，最后一行合计（home.mjs 的 renderSpend） -->
+              <div class="card spend" id="spend" hidden>
+                <div class="spend-head">
+                  <div>
+                    <p class="stat-value" id="spend-total"></p>
+                    <p class="stat-label" id="spend-label"></p>
+                  </div>
+                  <div class="period-tabs" role="tablist" data-i18n-aria-label="home.spendPeriods">
+                    <button type="button" class="period-tab" role="tab" data-period="today" data-i18n="periods.today">Today</button>
+                    <button type="button" class="period-tab" role="tab" data-period="month" data-i18n="periods.month">This month</button>
+                    <button type="button" class="period-tab" role="tab" data-period="total" data-i18n="periods.total">All time</button>
+                  </div>
+                </div>
+                <table class="spend-table">
+                  <thead>
+                    <tr>
+                      <th scope="col" data-i18n="home.model">Model</th>
+                      <th scope="col" data-i18n="home.cost">Cost</th>
+                      <th scope="col" data-i18n="home.tokens">Tokens</th>
+                      <th scope="col" data-i18n="home.count">Count</th>
+                      <th scope="col" data-i18n="home.latency">Latency</th>
+                    </tr>
+                  </thead>
+                  <tbody id="spend-rows"></tbody>
+                  <tfoot id="spend-sum"></tfoot>
+                </table>
+                <p class="spend-note" id="spend-note" hidden></p>
+              </div>
+            </div>
+
+            <aside class="home-side">
+              <!-- 口述卡：一张小卡，主题渐变只在键帽上 -->
+              <div class="dictate">
+                <kbd class="dictate-key" id="home-keycap"></kbd>
+                <p class="dictate-title" data-i18n="home.dictate">Press to talk</p>
+              </div>
+              <p class="version" id="home-version"></p>
+            </aside>
+          </div>
+        </section>
+
+        <!-- 历史记录：按天分组，一行一条 -->
+        <section class="page" data-route="history" aria-labelledby="history-title" hidden>
+          <h1 class="page-title" id="history-title" data-i18n="history.title">History</h1>
+          <p class="problem load-error" id="history-error" role="alert" hidden></p>
+          <p class="empty-state" id="history-empty" hidden></p>
+          <div id="history-days"></div>
+        </section>
+      </main>
+    </div>
+
+    <template id="history-day">
+      <section class="day">
+        <h2 class="day-title">Today</h2>
+        <ol class="rows"></ol>
+      </section>
+    </template>
+    <template id="history-row">
+      <li class="row">
+        <time class="row-time"></time>
+        <p class="row-text"></p>
+        <div class="row-actions">
+          <button type="button" class="icon-button copy" data-i18n-aria-label="history.copy" data-i18n-title="history.copy">
+            <svg class="icon" aria-hidden="true"><use href="#i-copy" /></svg>
+          </button>
+          <button type="button" class="icon-button details">
+            <svg class="icon" aria-hidden="true"><use href="#i-info" /></svg>
+          </button>
+        </div>
+      </li>
+    </template>
+
+    <!-- 设置：原版的"设置中心"是盖在主窗口上的对话框，左边一列菜单 -->
+    <dialog class="settings" id="settings" aria-labelledby="settings-heading">
+      <h2 class="visually-hidden" id="settings-heading" data-i18n="preferences.title">Settings</h2>
+      <nav class="settings-menu" data-i18n-aria-label="preferences.sections">
+        <button type="button" class="menu-item" data-pane="general">
+          <svg class="icon" aria-hidden="true"><use href="#i-sliders" /></svg><span data-i18n="preferences.general">General</span>
+        </button>
+        <button type="button" class="menu-item" data-pane="model">
+          <svg class="icon" aria-hidden="true"><use href="#i-key" /></svg><span data-i18n="preferences.model">Model</span><span class="menu-dot" data-for="model" hidden></span>
+        </button>
+        <button type="button" class="menu-item" data-pane="permissions">
+          <svg class="icon" aria-hidden="true"><use href="#i-shield" /></svg><span data-i18n="preferences.permissions">Permissions</span><span class="menu-dot" data-for="permissions" hidden></span>
+        </button>
+        <button type="button" class="menu-item" data-pane="about">
+          <svg class="icon" aria-hidden="true"><use href="#i-info" /></svg><span data-i18n="preferences.about">About</span>
+        </button>
+      </nav>
+      <div class="settings-body">
+        <button type="button" class="icon-button settings-close" id="settings-close" data-i18n-aria-label="common.close">
+          <svg class="icon" aria-hidden="true"><use href="#i-close" /></svg>
+        </button>
+
+        <section class="pane" data-pane="general">
+          <h3 class="pane-title" data-i18n="preferences.general">General</h3>
+          <div class="setting">
+            <label class="setting-title" for="hotkey" data-i18n="preferences.hotkey">Shortcut</label>
+            <select class="select" id="hotkey"></select>
+          </div>
+          <p class="setting-note" id="hotkey-note" role="status" hidden></p>
+          <div class="setting">
+            <label class="setting-title" for="theme" data-i18n="preferences.theme">Theme</label>
+            <select class="select" id="theme"></select>
+          </div>
+          <p class="setting-note" id="theme-note" role="status" hidden></p>
+          <div class="setting">
+            <label class="setting-title" for="language" data-i18n="preferences.language">Language</label>
+            <select class="select" id="language"></select>
+          </div>
+          <p class="setting-note" id="language-note" role="status" hidden></p>
+          <!-- 从终端启动时登记不了开机启动，整行不显示 -->
+          <div class="setting" id="open-at-login-row">
+            <label class="setting-title" for="open-at-login" data-i18n="preferences.openAtLogin">Launch at login</label>
+            <input type="checkbox" class="switch" id="open-at-login" />
+          </div>
+          <p class="setting-note" id="general-problem" role="alert" hidden></p>
+        </section>
+
+        <!-- 先选识别模式，再在模式里选模型（model-pane.mjs）。标签只切换看哪种，改用要按按钮 -->
+        <section class="pane" data-pane="model" hidden>
+          <h3 class="pane-title" data-i18n="preferences.model">Model</h3>
+          <div class="mode-tabs" role="tablist" data-i18n-aria-label="preferences.modes.label">
+            <button type="button" class="mode-tab" role="tab" data-mode="native" aria-controls="mode-native">
+              <span data-i18n="preferences.modes.native">Native</span><span class="mode-live" hidden></span>
+            </button>
+            <button type="button" class="mode-tab" role="tab" data-mode="local" aria-controls="mode-local">
+              <span data-i18n="preferences.modes.local">Local</span><span class="mode-live" hidden></span>
+            </button>
+          </div>
+          <div class="mode-head">
+            <p class="mode-hint" id="mode-hint"></p>
+            <span class="mode-in-use" id="mode-in-use" data-i18n="preferences.modes.inUse" hidden>In use</span>
+            <button type="button" class="button primary" id="use-mode" hidden></button>
+          </div>
+          <p class="setting-note" id="mode-problem" role="alert" hidden></p>
+          <p class="setting-note" id="mode-note" role="status" hidden></p>
+
+          <div class="mode-body" id="mode-native" role="tabpanel">
+            <div class="key-panel" id="key-panel"></div>
+          </div>
+
+          <div class="mode-body" id="mode-local" role="tabpanel" hidden>
+            <h4 class="step-title" data-i18n="preferences.local.step1">Step 1 · On-device transcription</h4>
+            <p class="models-summary" id="models-summary"></p>
+            <div class="transcribers" id="transcribers" role="radiogroup" data-i18n-aria-label="preferences.local.step1"></div>
+            <p class="setting-note" id="models-problem" role="alert" hidden></p>
+            <div class="transcriber-failed">
+              <p class="setting-note" id="transcriber-problem" role="alert" hidden></p>
+              <button type="button" class="button" id="transcriber-retry" data-i18n="preferences.local.retry" hidden>Retry</button>
+            </div>
+            <div class="setting">
+              <label class="setting-title" for="model-source" data-i18n="preferences.local.source">Download from</label>
+              <select class="select" id="model-source"></select>
+            </div>
+            <p class="setting-note" id="source-note" role="status" hidden></p>
+
+            <h4 class="step-title" data-i18n="preferences.local.step2">Step 2 · Polishing</h4>
+            <div class="key-panel" id="polish-panel"></div>
+            <!-- 放进上面面板的空格里（key-panel.mjs 的 slot）：选哪家下面、key 和检查上面 -->
+            <div class="polish-extra" id="polish-extra">
+              <label class="field" id="polish-model-row" hidden>
+                <span data-i18n="preferences.local.polishModel">Model</span>
+                <select class="select" id="polish-model"></select>
+              </label>
+              <div class="custom-fields" id="custom-fields" hidden>
+                <label class="field">
+                  <span data-i18n="preferences.local.customModel">Model name</span>
+                  <input class="input" id="custom-model" spellcheck="false" autocomplete="off" data-i18n-placeholder="preferences.local.customModelPlaceholder" />
+                </label>
+                <label class="field">
+                  <span data-i18n="preferences.local.customUrl">Address</span>
+                  <input class="input" id="custom-url" type="url" spellcheck="false" autocomplete="off" data-i18n-placeholder="preferences.local.customUrlPlaceholder" />
+                </label>
+                <button type="button" class="button" id="apply-custom" data-i18n="preferences.local.apply" hidden>Apply</button>
+              </div>
+            </div>
+            <p class="setting-note" id="local-problem" role="alert" hidden></p>
+          </div>
+        </section>
+
+        <section class="pane" data-pane="permissions" hidden>
+          <h3 class="pane-title" data-i18n="preferences.permissions">Permissions</h3>
+          <ul class="permissions">
+            <!-- 只有麦克风有可以去点的开关：Windows 设置里有它的那一页。两把钩子只能看装没装上 -->
+            <li data-permission="microphone">
+              <p class="setting-title" data-i18n="permissions.microphone">Microphone</p>
+              <span class="granted"></span>
+              <button type="button" class="button"></button>
+            </li>
+            <li data-permission="listen" data-status>
+              <p class="setting-title" data-i18n="permissions.listen">Keyboard hook</p>
+              <span class="granted"></span>
+            </li>
+            <li data-permission="trusted" data-status>
+              <p class="setting-title" data-i18n="permissions.trusted">Click interception</p>
+              <span class="granted"></span>
+            </li>
+          </ul>
+          <p class="recheck-row"><button type="button" class="button" id="recheck" data-i18n="preferences.recheck">Check again</button></p>
+        </section>
+
+        <section class="pane" data-pane="about" hidden>
+          <h3 class="pane-title" data-i18n="preferences.about">About</h3>
+          <div class="setting">
+            <p class="setting-title" data-i18n="preferences.version">Version</p>
+            <p class="setting-value" id="about-version"></p>
+          </div>
+          <div class="setting">
+            <p class="setting-title" data-i18n="preferences.dataFolder">Data folder</p>
+            <code class="setting-value" id="about-home"></code>
+          </div>
+          <div class="setting">
+            <p class="setting-title" data-i18n="preferences.source">Source code</p>
+            <button type="button" class="button" id="open-homepage">GitHub</button>
+          </div>
+        </section>
+      </div>
+    </dialog>
+
+    <script type="module" src="hub.mjs"></script>
+  </body>
+</html>

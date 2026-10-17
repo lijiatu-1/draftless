@@ -1,0 +1,273 @@
+/* 普通窗口（主窗口、首次引导）的底子：光晕、玻璃、字体、按钮、输入框。跟随系统的深浅色。
+   颜色由主题给（src/themes 里"窗口"那一组，浅深各一份），字号、圆角、动效在 tokens.css。
+   结构照原版，观感是自己的：窗口背后有主题色的两团光（aura、aura2），侧栏、对话框是透出光的玻璃，
+   主按钮和口述卡是从 primary 走到 glow 的渐变。灰阶照原版的做法，从正文色叠一层半透明调出来
+   （targets/typeless 的 fill.none.hover 7%、selected 15%、container.thin 5%、border.thin 7%）。 */
+
+:root {
+  color-scheme: light dark;
+  --fill-thin: color-mix(in oklab, var(--ink) 4%, var(--bg));
+  --fill-hover: color-mix(in oklch, var(--ink) 6%, transparent);
+  --fill-selected: color-mix(in oklch, var(--ink) 10%, transparent);
+  --line: color-mix(in oklch, var(--ink) 8%, transparent);
+
+  /* 主题的渐变：主按钮、口述卡、进度、电平 */
+  --gradient: linear-gradient(135deg, var(--primary), var(--glow));
+  /* 窗口背后的两团光，一直不动：玻璃透出来的就是它 */
+  --aura-layer:
+    radial-gradient(56rem 38rem at -8% -12%, var(--aura), transparent 72%),
+    radial-gradient(48rem 34rem at 108% 112%, var(--aura-2), transparent 72%);
+  /* 浮在光上的面：卡片、列表。半透明，透出一点光的颜色 */
+  --surface: color-mix(in oklch, var(--bg) 74%, transparent);
+  /* 选中的那一项：比面再实一点 */
+  --surface-solid: var(--bg);
+  /* 玻璃：更透，背后的东西模糊、颜色提一点 */
+  --glass: color-mix(in oklch, var(--bg) 46%, transparent);
+  --glass-filter: blur(28px) saturate(1.7);
+  /* 对话框那种要读一整页字的玻璃：实一些 */
+  --glass-strong: color-mix(in oklch, var(--bg) 82%, transparent);
+  /* 面的上沿一道亮边：浅色下是底色（白），深色下是淡淡的正文色 */
+  --sheen: color-mix(in oklch, var(--bg) 90%, transparent);
+  --edge: 0 0 0 1px var(--line), inset 0 1px 0 var(--sheen);
+  --lift: 0 1px 2px oklch(0 0 0 / 0.04), 0 10px 30px -12px oklch(0 0 0 / 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: color-mix(in oklch, var(--raised) 46%, transparent);
+    --surface-solid: var(--raised);
+    --glass: color-mix(in oklch, var(--bg) 52%, transparent);
+    --glass-strong: color-mix(in oklch, var(--bg) 78%, transparent);
+    --sheen: color-mix(in oklch, var(--ink) 9%, transparent);
+    --lift: 0 1px 2px oklch(0 0 0 / 0.3), 0 12px 32px -12px oklch(0 0 0 / 0.5);
+  }
+}
+
+/* 系统里打开了"降低透明度"：玻璃换成实底 */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --surface: var(--surface-solid);
+    --glass: var(--fill-thin);
+    --glass-strong: var(--bg);
+    --glass-filter: none;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 设了 display 的元素，hidden 属性会被盖掉：统一让 hidden 说了算 */
+[hidden] {
+  /* biome-ignore lint/complexity/noImportantStyles: 只有这样才压得住后面各处的 display，hidden 本来就该最优先 */
+  display: none !important;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--aura-layer), var(--bg);
+  font: var(--text-body) / 1.6 var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+p {
+  margin: 0;
+}
+
+.problem {
+  color: var(--problem);
+}
+
+.icon {
+  width: 1rem;
+  height: 1rem;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 各家模型的图标（shared/provider-icons.mjs）：实心的，跟着文字的颜色 */
+.provider-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex: none;
+  fill: currentColor;
+}
+
+.button {
+  padding: 0.3rem 0.8rem;
+  font: inherit;
+  font-size: var(--text-small);
+  font-weight: 510;
+  color: var(--ink);
+  background: var(--fill-hover);
+  border: none;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-base) var(--ease-out),
+    filter var(--dur-base) var(--ease-out),
+    scale var(--dur-fast) var(--ease-out);
+}
+
+.button:hover {
+  background-color: var(--fill-selected);
+}
+
+.button:active:not(:disabled) {
+  scale: 0.97;
+}
+
+.button:disabled {
+  color: var(--ink-2);
+  cursor: default;
+}
+
+.button:disabled:hover {
+  background-color: var(--fill-hover);
+}
+
+.button.primary {
+  color: var(--on-primary);
+  background: var(--gradient);
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.12);
+}
+
+.button.primary:hover {
+  filter: brightness(1.08) saturate(1.1);
+}
+
+.button.primary:disabled {
+  color: var(--ink-2);
+  background: var(--fill-hover);
+  box-shadow: none;
+  filter: none;
+}
+
+.icon-button {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  color: var(--ink-2);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.icon-button:hover {
+  color: var(--ink);
+  background: var(--fill-hover);
+}
+
+.link {
+  padding: 0;
+  font: inherit;
+  font-size: var(--text-small);
+  color: var(--ink);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 0.25em;
+}
+
+.link:hover {
+  text-decoration-color: currentColor;
+}
+
+:is(.button, .icon-button, .link, .input, .select, .switch):focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.input,
+.select {
+  min-width: 0;
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  font-size: var(--text-small);
+  color: var(--ink);
+  background: var(--surface-solid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+}
+
+.input::placeholder {
+  color: var(--ink-2);
+}
+
+/* 开关：原版的布尔设置都是这种 */
+.switch {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 2.25rem;
+  height: 1.25rem;
+  margin: 0;
+  background: var(--fill-selected);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background-color var(--dur-base) var(--ease-out);
+}
+
+.switch::before {
+  content: "";
+  position: absolute;
+  top: 0.125rem;
+  left: 0.125rem;
+  width: 1rem;
+  height: 1rem;
+  background: var(--bg);
+  border-radius: 50%;
+  box-shadow: 0 1px 2px oklch(0 0 0 / 0.25);
+  transition: translate var(--dur-base) var(--ease-out);
+}
+
+.switch:checked {
+  background: var(--gradient);
+}
+
+.switch:checked::before {
+  translate: 1rem 0;
+}
+
+.switch:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button,
+  .icon-button,
+  .switch,
+  .switch::before {
+    transition: none;
+  }
+
+  .button:active:not(:disabled) {
+    scale: none;
+  }
+}

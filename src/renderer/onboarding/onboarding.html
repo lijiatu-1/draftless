@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'" />
+    <title>Draftless</title>
+    <link rel="stylesheet" href="../shared/tokens.css" />
+    <link rel="stylesheet" href="../shared/window.css" />
+    <link rel="stylesheet" href="../shared/setup.css" />
+    <link rel="stylesheet" href="onboarding.css" />
+  </head>
+  <body>
+    <!-- 首次引导：对应原版的 onboarding.html。原版分"注册 · 设置 · 体验一下"三段，
+         我们没有账号，第一段换成接上一家模型 -->
+    <header class="steps">
+      <ol class="step-groups">
+        <li data-group="key" data-i18n="onboarding.groups.key">Model</li>
+        <li data-group="setup" data-i18n="onboarding.groups.setup">Set up</li>
+        <li data-group="try" data-i18n="onboarding.groups.try">Try it</li>
+      </ol>
+    </header>
+
+    <main class="stage">
+      <section class="step" data-step="key" aria-labelledby="key-title">
+        <div class="step-text">
+          <h1 class="step-title" id="key-title">
+            <span class="soft" data-i18n="onboarding.key.soft">Connect a </span><span data-i18n="onboarding.key.title">model</span>
+          </h1>
+          <div class="key-panel" id="key-panel"></div>
+        </div>
+        <aside class="visual flow" aria-hidden="true">
+          <p class="flow-card" data-i18n="onboarding.key.spoken">“Um, let's meet at nine tomorrow, no wait, nine thirty…”</p>
+          <p class="flow-arrow">↓</p>
+          <!-- 中间写 Draftless 而不是哪家模型：只有 key 不够，是经过它才变成右边那样 -->
+          <p class="flow-card app"><img src="../../../assets/icon.svg" alt="" width="22" height="22" />Draftless</p>
+          <p class="flow-arrow">↓</p>
+          <p class="flow-card result" data-i18n="onboarding.key.result">Let's meet at 9:30 tomorrow.</p>
+        </aside>
+      </section>
+
+      <section class="step" data-step="permissions" aria-labelledby="permissions-title" hidden>
+        <div class="step-text">
+          <h1 class="step-title" id="permissions-title">
+            <span class="soft" data-i18n="onboarding.permissions.soft">Turn on </span
+            ><span data-i18n="onboarding.permissions.title">microphone access</span>
+          </h1>
+          <ul class="grants">
+            <!-- Windows 上只有麦克风要用户自己去开；下面两把钩子装上就有、装不上就是被安全软件拦了，
+                 所以它们没有"允许"按钮，右边直接写状态 -->
+            <li data-permission="microphone">
+              <p class="grant-primary" data-i18n="permissions.microphone">Microphone</p>
+              <button type="button" class="button primary"></button>
+            </li>
+            <li data-permission="listen" data-status>
+              <p class="grant-primary" data-i18n="permissions.listen">Keyboard hook</p>
+              <span class="grant-state"></span>
+              <button type="button" class="button primary" hidden></button>
+            </li>
+            <li data-permission="trusted" data-status>
+              <p class="grant-primary" data-i18n="permissions.trusted">Click interception</p>
+              <span class="grant-state"></span>
+              <button type="button" class="button primary" hidden></button>
+            </li>
+          </ul>
+        </div>
+        <aside class="visual privacy">
+          <p class="privacy-name" data-i18n="onboarding.permissions.history">History stays on this PC</p>
+          <p class="privacy-name" data-i18n="onboarding.permissions.audio">Audio goes only to your model</p>
+          <p class="privacy-name" data-i18n="onboarding.permissions.key">Key encrypted by Windows, kept on this PC</p>
+        </aside>
+      </section>
+
+      <section class="step" data-step="microphone" aria-labelledby="microphone-title" hidden>
+        <div class="step-text">
+          <h1 class="step-title" id="microphone-title">
+            <span class="soft" data-i18n="onboarding.microphone.soft">Speak to </span
+            ><span data-i18n="onboarding.microphone.title">test the mic</span>
+          </h1>
+          <p class="question" data-i18n="onboarding.microphone.question">Are the bars moving?</p>
+          <div class="answers">
+            <button type="button" class="button primary" id="microphone-yes" data-i18n="onboarding.microphone.yes">Yes, continue</button>
+            <button type="button" class="button" id="microphone-no" data-i18n="onboarding.microphone.no">No</button>
+          </div>
+          <p class="hint" id="microphone-help" hidden>
+            <span data-i18n="onboarding.microphone.help">Check the input device and volume in Settings › System › Sound, or turn on</span>
+            <button type="button" class="link" id="microphone-settings" data-i18n="onboarding.microphone.settings">Microphone access</button>
+          </p>
+          <p class="problem" id="microphone-error" role="alert" hidden></p>
+        </div>
+        <aside class="visual meter-panel" aria-hidden="true">
+          <div class="meter" id="meter"></div>
+        </aside>
+      </section>
+
+      <section class="step" data-step="hotkey" aria-labelledby="hotkey-title" hidden>
+        <div class="step-text">
+          <h1 class="step-title" id="hotkey-title">
+            <span class="soft" data-i18n="onboarding.hotkey.soft">Press it to </span
+            ><span data-i18n="onboarding.hotkey.title">test the shortcut</span>
+          </h1>
+          <p class="question" data-i18n="onboarding.hotkey.question">Did the key light up?</p>
+          <div class="answers">
+            <button type="button" class="button primary" id="hotkey-yes" data-i18n="onboarding.hotkey.yes">Yes, continue</button>
+            <button type="button" class="button" id="hotkey-no" data-i18n="onboarding.hotkey.no">No, pick another key</button>
+          </div>
+          <div class="hotkey-choice" id="hotkey-choice" hidden>
+            <label for="hotkey-select" data-i18n="onboarding.hotkey.switchTo">Switch to</label>
+            <select class="select" id="hotkey-select"></select>
+          </div>
+          <p class="hint" id="hotkey-note" role="status" hidden></p>
+        </div>
+        <aside class="visual keycap-panel" aria-hidden="true">
+          <kbd class="big-keycap" id="big-keycap"></kbd>
+        </aside>
+      </section>
+
+      <section class="step" data-step="try" aria-labelledby="try-title" hidden>
+        <div class="step-text">
+          <h1 class="step-title" id="try-title">
+            <span class="soft" data-i18n="onboarding.try.soft">Now, </span><span data-i18n="onboarding.try.title">say something</span>
+          </h1>
+          <blockquote class="sample" data-i18n="onboarding.try.sample">Um, let's meet tomorrow at nine, no wait, nine thirty, and bring last week's numbers.</blockquote>
+        </div>
+        <aside class="visual notes">
+          <textarea class="notes-text" id="try-text" data-i18n-aria-label="onboarding.try.notes"></textarea>
+        </aside>
+      </section>
+
+      <section class="step done" data-step="done" aria-labelledby="done-title" hidden>
+        <h1 class="step-title" id="done-title">
+          <span class="soft" data-i18n="onboarding.done.soft">Speak, </span><span data-i18n="onboarding.done.title">don't type</span>
+        </h1>
+        <button type="button" class="button primary big" id="finish" data-i18n="onboarding.done.start">Get started</button>
+      </section>
+    </main>
+
+    <footer class="nav">
+      <button type="button" class="button" id="back" data-i18n="onboarding.back">Back</button>
+      <button type="button" class="button primary" id="next"></button>
+    </footer>
+
+    <script type="module" src="onboarding.mjs"></script>
+  </body>
+</html>

@@ -1,0 +1,50 @@
+[
+ {
+  "file": "assets/stenograph-1a-miles-bartholomew.jpg",
+  "media": "image",
+  "ref": "openverse:b541d2a1-f963-439d-83cf-86ce4eb0ceb8",
+  "title": "Stenograph 1a, Miles Bartholomew",
+  "creator": "Martin Howard",
+  "creatorUrl": "https://commons.wikimedia.org/wiki/User:Martin_Howard",
+  "date": null,
+  "license": "CC BY-SA 4.0",
+  "licenseCode": "by-sa",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "creditRequired": true,
+  "page": "https://commons.wikimedia.org/w/index.php?curid=146775419",
+  "via": "Wikimedia Commons",
+  "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/db/Stenograph_1a%2C_Miles_Bartholomew.jpg/1920px-Stenograph_1a%2C_Miles_Bartholomew.jpg",
+  "width": 1920,
+  "height": 1614,
+  "bytes": 674774,
+  "credit": "\"Stenograph 1a, Miles Bartholomew\" by Martin Howard, CC BY-SA 4.0, via Wikimedia Commons",
+  "notes": [
+   "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
+  ],
+  "saved": "2026-10-17T15:59:13.195Z"
+ },
+ {
+  "file": "assets/vienna-dictaphone-vintage-recorder-0174.jpg",
+  "media": "image",
+  "ref": "openverse:898903d7-620f-4404-ae5c-8214149706f0",
+  "title": "Vienna - Dictaphone, vintage recorder - 0174",
+  "creator": "Jorge Royan",
+  "creatorUrl": null,
+  "date": null,
+  "license": "CC BY-SA 3.0",
+  "licenseCode": "by-sa",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "creditRequired": true,
+  "page": "https://commons.wikimedia.org/w/index.php?curid=23403850",
+  "via": "Wikimedia Commons",
+  "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c1/Vienna_-_Dictaphone%2C_vintage_recorder_-_0174.jpg/1920px-Vienna_-_Dictaphone%2C_vintage_recorder_-_0174.jpg",
+  "width": 1920,
+  "height": 2883,
+  "bytes": 744962,
+  "credit": "\"Vienna - Dictaphone, vintage recorder - 0174\" by Jorge Royan, CC BY-SA 3.0, via Wikimedia Commons",
+  "notes": [
+   "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
+  ],
+  "saved": "2026-10-17T15:59:45.852Z"
+ }
+]
