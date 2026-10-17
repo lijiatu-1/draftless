@@ -25,7 +25,7 @@
 ### 装（就这一步）
 
 1. 打开 **[Releases 页面](https://github.com/lijiatu-1/draftless/releases/latest)**
-2. 下载 **`Draftless-win32-x64.zip`**（约 267 MB，别的文件不用管）
+2. 下载 **`Draftless-win32-x64.zip`**（约 178 MB，别的文件不用管）
 3. 解压到任意位置
 4. 在解压出来的那个目录里，右键 `install.ps1` → **使用 PowerShell 运行**
    （或者在那个目录里跑 `powershell -ExecutionPolicy Bypass -File install.ps1`）
@@ -233,7 +233,7 @@ npm run check          # 代码检查 + 全部测试（不联网、不开窗口�
 
 ```powershell
 npm run dist       # 打成 dist\Draftless-win32-x64\，双击里面的 Draftless.exe
-npm run dist:zip   # 再压成发布用的 zip（737 MB → 267 MB）
+npm run dist:zip   # 再压成发布用的 zip（444.7 MB → 178.2 MB）
 npm run icons      # 从 assets 里的 svg 重新生成 app.ico / tray.ico
 ```
 

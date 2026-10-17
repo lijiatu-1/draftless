@@ -66,8 +66,8 @@
 - 整理：两跳（omni 转写 → qwen-plus 整理），能删废话、合并语义重复、修音译错字、按意图重排
 - 上下文：读焦点输入框里光标前 500 字，实测 74 ms
 - 粘贴：`INPUT` 结构体修好之后 `SendInput` 正常
-- 安装：从 GitHub Releases 下载 `Draftless-win32-x64.zip`（267 MB）→ 解压 → 右键 `install.ps1` 用 PowerShell 运行。**没有一键安装脚本**（做过 `install-remote.ps1`，用户说不要，删掉了）
-- 落地页：https://lijiatu-1.github.io/fast-speak/ （taste-skill 做的，真浏览器 0 FAIL）
+- 安装：从 GitHub Releases 下载 `Draftless-win32-x64.zip`（178 MB）→ 解压 → 右键 `install.ps1` 用 PowerShell 运行。**没有一键安装脚本**（做过 `install-remote.ps1`，用户说不要，删掉了）
+- 落地页：https://lijiatu-1.github.io/draftless/ （taste-skill 做的，真浏览器 0 FAIL）
 
 **没做完的**（按严重度）：
 
