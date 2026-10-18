@@ -48,11 +48,13 @@ export function viewOf(state, previousPhase) {
  * @param {Function} t 界面语言的翻译函数（src/i18n）。键在句子里的位置由各语言自己定
  * @returns {Array<string | { key: string }>} 一段一段的：文字，或者一个要标成键名的键
  */
-export function hintFor(view, { keycap, cancellable }, t) {
+export function hintFor(view, { keycap, cancellable, secondsLeft = null }, t) {
   switch (view) {
     case View.STARTING:
       return [t("bar.opening")];
     case View.RECORDING:
+      // 最后 1 分钟：剩下的秒数比"再按一下"更该被看见
+      if (secondsLeft !== null) return [t("bar.countdown", { seconds: secondsLeft })];
       return t.parts(cancellable ? "bar.recording" : "bar.recordingNoEsc", {
         key: { key: keycap },
         esc: { key: "esc" },

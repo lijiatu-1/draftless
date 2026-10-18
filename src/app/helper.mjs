@@ -109,6 +109,14 @@ export function startHelper(command, { args = [], onEvent, log }) {
       if (!exited) child.stdin.write(`${JSON.stringify({ cmd: "capture", regions })}\n`);
     },
     /**
+     * 录音期间把系统输出静音（扬声器的声音会回灌进麦克风），录完还原成用户原来的状态。
+     * 不等回应：静音失败不该挡住这次听写，最坏就是回灌一点声音。
+     * @param {boolean} on
+     */
+    setSystemMute(on) {
+      if (!exited) child.stdin.write(`${JSON.stringify({ cmd: on ? "mute" : "unmute" })}\n`);
+    },
+    /**
      * 读焦点输入框里光标前的一段文字，用来给模型判断"他在写什么"。
      *
      * 拿不到是常态（老 Win32 程序、密码框、焦点在窗口而不是输入框），那时回空字符串。

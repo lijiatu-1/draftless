@@ -384,6 +384,11 @@ async function main() {
     log.error("bar_gone", { reason: details.reason });
     helper.release();
   });
+  // 录音期间静音系统输出：悬浮条说开始/结束，主进程转给小帮手（CoreAudio 在它那一侧）
+  ipcMain.on("audio:mute", (_event, on) => {
+    // helper 要到下面才声明（暂时性死区，踩过），在回调里到调用时才取就没事
+    if (helper) helper.setSystemMute(on === true);
+  });
   // 听写进行中，页面让小帮手把 esc 和条上两个按钮的点击截下来（null 是不截了）。
   // 页面给的是按钮在窗口里的位置，小帮手要的是在屏幕上的位置
   ipcMain.on("bar:capture", (_event, regions) => {

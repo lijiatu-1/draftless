@@ -58,6 +58,8 @@ export function createBarUi({ document, host, keycap: initialKeycap, t: initialT
   let captured = null;
   /** 到时间把条收起来的定时器 */
   let hideTimer = null;
+  /** 录音最后 1 分钟剩下的秒数；不在倒计时里是 null */
+  let secondsLeft = null;
 
   function drawWave(heights) {
     for (const [index, bar] of waveBars.entries()) bar.style.setProperty("--h", heights[index].toFixed(3));
@@ -88,7 +90,7 @@ export function createBarUi({ document, host, keycap: initialKeycap, t: initialT
   }
 
   function drawHint() {
-    const parts = hintFor(view, { keycap, cancellable: controls }, t);
+    const parts = hintFor(view, { keycap, cancellable: controls, secondsLeft }, t);
     hint.replaceChildren(
       ...parts.map((part) =>
         typeof part === "string" ? part : Object.assign(document.createElement("kbd"), { textContent: part.key }),
@@ -156,6 +158,14 @@ export function createBarUi({ document, host, keycap: initialKeycap, t: initialT
       // 排版定了才量得出按钮在哪
       syncCapture();
       if (LINGER_MS[next] !== undefined) hideTimer = setTimeout(hide, LINGER_MS[next]);
+    },
+
+    /** 录音剩下的秒数（最后 1 分钟每秒一次）；null 是不在倒计时 */
+    setCountdown(seconds) {
+      if (seconds === secondsLeft) return;
+      secondsLeft = seconds;
+      // show() 在"同样子、同一句话"时不重画，而倒计时只改提示行，所以这里自己画
+      if (view === View.RECORDING) drawHint();
     },
 
     /** 正在听时的一个瞬时音量（0–1） */

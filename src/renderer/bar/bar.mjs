@@ -11,6 +11,10 @@ import { VoiceSocket } from "./voice-socket.mjs";
 
 /** 原版的单次录音上限：9 分钟 */
 const MAX_DURATION_MS = 540_000;
+/** 最后这一分钟，悬浮条每秒把剩下的秒数念给用户（逆向笔记 10 的倒计时） */
+const COUNTDOWN_FROM_MS = 60_000;
+/** 热键防抖：这个窗口里的第二下按下当作同一下 */
+const KEY_DEBOUNCE_MS = 300;
 
 // 页面的 lang 跟着界面语言：提示是 aria-live 的，读屏软件按它挑用哪种语言念
 localize();
@@ -41,11 +45,14 @@ let state = initialState;
 let session = null;
 let holdTimer = null;
 let maxDurationTimer = null;
+let countdownTimer = null;
+let lastKeyDownAt = 0;
 
 function dispatch(event) {
   const previous = state;
   const result = transition(state, event);
   state = result.state;
+  ui.setCountdown(state.secondsLeft);
   // 状态没动（比如空闲时松开热键）就不重画
   if (state !== previous) ui.show(viewOf(state, previous.phase), t.text(state.message));
   for (const action of result.actions) ACTIONS[action]();
@@ -81,7 +88,16 @@ function start() {
     }
     current.recording = recording;
     maxDurationTimer = setTimeout(() => dispatch({ type: "MAX_DURATION" }), MAX_DURATION_MS);
+    const startedAt = Date.now();
+    countdownTimer = setInterval(() => {
+      const remaining = MAX_DURATION_MS - (Date.now() - startedAt);
+      if (remaining <= COUNTDOWN_FROM_MS) {
+        dispatch({ type: "COUNTDOWN", seconds: Math.max(0, Math.ceil(remaining / 1000)) });
+      }
+    }, 1000);
     dispatch({ type: "MIC_READY" });
+    // 录音期间静音系统输出：扬声器的声音会回灌进麦克风（逆向笔记 07/11，原版也这么做）
+    window.draftless.setSystemMute(true);
   })().catch((error) => {
     console.error("开始录音失败", error);
     if (!current.cancelled) dispatch({ type: "FAILED", message: describeStartError(error) });
@@ -96,6 +112,8 @@ function describeStartError(error) {
 
 function cancel() {
   clearTimeout(maxDurationTimer);
+  clearInterval(countdownTimer);
+  window.draftless.setSystemMute(false);
   if (!session) return;
   session.cancelled = true;
   session.recording?.cancel();
@@ -105,6 +123,8 @@ function cancel() {
 
 async function stop() {
   clearTimeout(maxDurationTimer);
+  clearInterval(countdownTimer);
+  window.draftless.setSystemMute(false);
   const current = session;
   session = null;
   let recorded = null;
@@ -151,6 +171,12 @@ const INPUT_EVENTS = {
 };
 
 window.draftless.onInput((event) => {
+  if (event.event === "hotkey" && event.down) {
+    const now = Date.now();
+    // 300 毫秒里的第二下当作同一下的抖动（逆向笔记 10：热键防抖），不然连按会双触发
+    if (now - lastKeyDownAt < KEY_DEBOUNCE_MS) return;
+    lastKeyDownAt = now;
+  }
   const type = Object.hasOwn(INPUT_EVENTS, event.event) ? INPUT_EVENTS[event.event](event) : undefined;
   if (type === undefined) {
     console.warn("不认识的输入事件", event);

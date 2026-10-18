@@ -321,6 +321,9 @@ namespace Draftless
             // 对面是高权限窗口时不要白发一次：SendInput 会"成功"、按键却进不去，
             // 结果是我们报贴好了、用户什么都没看到。文字已经写进剪贴板了，就留在那儿
             if (ForegroundBlocksInput()) return new Result { Ok = false, Reason = "uipi_blocked" };
+            // 焦点不在能打字的地方（桌面、只读面板、浏览器正文）时也不要白发一次：
+            // 按键进得去队列也没有落点。文字留在剪贴板里，主进程那句"文字已复制"才接得上
+            if (!Context.FocusedIsEditable()) return new Result { Ok = false, Reason = "not_editable" };
             // 这个编译器的语言版本到 C# 5（.NET Framework 4 的 csc），所以 out 变量要事先声明、
             // 也不能用 $"" 插值——写成拼接
             uint error;

@@ -95,6 +95,14 @@ test("SendInput 失败但不是被权限挡的（比如结构体大小不对那�
   assert.deepEqual(clipboard, ["我们后天开会。"]);
 });
 
+test("焦点不在能打字的地方（not_editable）：说清光标不在输入框里，不说成权限问题", async () => {
+  const { delivery, clipboard } = setup(async () => ({ ok: false, reason: "not_editable" }));
+  const { notice } = await delivery.completed(payload());
+  assert.match(zh.text(notice), /光标不在能打字的地方.*Ctrl\+V/);
+  assert.ok(!/管理员权限/.test(zh.text(notice)), "不能把不可编辑说成权限问题");
+  assert.deepEqual(clipboard, ["我们后天开会。"]);
+});
+
 test("真被 UIPI 拦下（ERROR_ACCESS_DENIED = 5）：才说管理员权限的窗口", async () => {
   const { delivery } = setup(async () => ({ ok: false, reason: "input_blocked:5" }));
   const { notice } = await delivery.completed(payload());

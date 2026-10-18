@@ -242,6 +242,7 @@ export default {
     noAccessibility: "管理员权限的窗口收不到模拟按键：文字已复制，按 Ctrl+V 粘贴",
     pasteFailed: "没能自动粘贴：文字已复制，按 Ctrl+V 粘贴",
     pasteFailedNoClipboard: "没能自动粘贴，剪贴板也被别的程序占着：成品在历史里，从那里复制",
+    notEditable: "光标不在能打字的地方：文字已复制，按 Ctrl+V 粘贴",
   },
 
   bar: {
@@ -250,6 +251,7 @@ export default {
     recordingNoEsc: "再按一下 {key} 完成",
     finishing: "整理中",
     noHold: "不支持按住说话：按一下开始，再按一下结束",
+    countdown: "还有 {seconds} 秒自动结束",
     noMicPermission: "缺麦克风权限：设置 › 隐私和安全性 › 麦克风",
     noMicrophone: "找不到麦克风",
     noSignal: "麦克风没信号：查输入设备、是否静音",

@@ -27,6 +27,7 @@ contextBridge.exposeInMainWorld("draftless", {
   onBarControls: (callback) => ipcRenderer.on("bar:controls", (_event, enabled) => callback(enabled)),
   setBarVisible: (visible) => ipcRenderer.send("bar:set-visible", visible),
   captureBarInput: (regions) => ipcRenderer.send("bar:capture", regions),
+  setSystemMute: (on) => ipcRenderer.send("audio:mute", on === true),
   deliver: (payload) => ipcRenderer.invoke("dictation:deliver", payload),
   reportFailure: (payload) => ipcRenderer.invoke("dictation:failed", payload),
 

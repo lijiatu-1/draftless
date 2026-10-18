@@ -70,6 +70,45 @@ namespace Draftless
         }
 
         /// <summary>
+        /// 焦点位置是不是一个能打字的地方。粘贴前问一次：
+        /// 桌面、只读面板、浏览器正文这些地方 Ctrl+V 进去没有落点，贴了等于没贴，
+        /// 用户还会以为字丢了——这时候该走"文字已复制"那条兜底（逆向笔记 14 的备忘第 1 条）。
+        ///
+        /// 判定顺序是保守的：ValuePattern 的 IsReadOnly 说了算；没有 ValuePattern 时
+        /// 只看控件类型是不是编辑框/文档；**任何一步查不了都放行**——自定义控件报的类型千奇百怪，
+        /// 误拦一次比多贴一次糟得多（和 Paste.IsElevated 查不了当没提权是同一个取舍）。
+        /// 永远不抛。
+        /// </summary>
+        public static bool FocusedIsEditable()
+        {
+            AutomationElement focused = null;
+            try
+            {
+                focused = AutomationElement.FocusedElement;
+            }
+            catch (Exception)
+            {
+                return true;
+            }
+            if (focused == null) return true;
+            try
+            {
+                object pattern;
+                if (focused.TryGetCurrentPattern(ValuePattern.Pattern, out pattern))
+                {
+                    ValuePattern value = pattern as ValuePattern;
+                    if (value != null) return !value.Current.IsReadOnly;
+                }
+                ControlType type = focused.Current.ControlType;
+                return type == ControlType.Edit || type == ControlType.Document;
+            }
+            catch (Exception)
+            {
+                return true;
+            }
+        }
+
+        /// <summary>
         /// 用 TextPattern 精确取光标前的一段。
         ///
         /// 关键在那三步 range 操作：光标的 range 通常是个空区间，先把它的**末端**挪到文档开头，

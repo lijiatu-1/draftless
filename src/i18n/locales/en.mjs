@@ -252,6 +252,7 @@ export default {
     noAccessibility: "Can't paste into administrator windows: text copied, press Ctrl+V to paste",
     pasteFailed: "Couldn't paste: text copied, press Ctrl+V to paste",
     pasteFailedNoClipboard: "Couldn't paste, and the clipboard is busy too: the text is in History, copy it from there",
+    notEditable: "The caret isn't in something editable: text copied, press Ctrl+V to paste",
   },
 
   bar: {
@@ -260,6 +261,7 @@ export default {
     recordingNoEsc: "Press {key} to finish",
     finishing: "Refining",
     noHold: "No need to hold: press once to start, again to finish",
+    countdown: "Auto-stops in {seconds} s",
     noMicPermission: "No microphone access: Settings › Privacy & security › Microphone",
     noMicrophone: "No microphone found",
     noSignal: "The microphone isn't picking anything up: check the input device and mute",

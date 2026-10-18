@@ -29,9 +29,10 @@ export const Action = Object.freeze({
  * 可能是长按，也可能是热键加别的键的组合键。
  * message：出错原因或给用户的提示，只在 error 和带提示回到 idle 时有。
  */
-export const initialState = Object.freeze({ phase: Phase.IDLE, held: false, message: null });
+export const initialState = Object.freeze({ phase: Phase.IDLE, held: false, message: null, secondsLeft: null });
 
-const idle = (message = null) => ({ phase: Phase.IDLE, held: false, message });
+const idle = (message = null) => ({ phase: Phase.IDLE, held: false, message, secondsLeft: null });
+const finishing = () => ({ phase: Phase.FINISHING, held: false, message: null, secondsLeft: null });
 const unchanged = (state) => ({ state, actions: [] });
 
 export function transition(state, event) {
@@ -39,14 +40,15 @@ export function transition(state, event) {
   switch (event.type) {
     case "KEY_DOWN":
       if (phase === Phase.IDLE || phase === Phase.ERROR) {
+        // 长按计时不在这里装：麦克风就绪之前那几百毫秒算初始化，用户还按着键不该被判成长按
         return {
-          state: { phase: Phase.STARTING, held: true, message: null },
-          actions: [Action.START, Action.ARM_HOLD_TIMER],
+          state: { phase: Phase.STARTING, held: true, message: null, secondsLeft: null },
+          actions: [Action.START],
         };
       }
       // 不看 held：万一上一次松开的事件丢了，再按一下也要能结束，不能卡在录音里
       if (phase === Phase.RECORDING) {
-        return { state: { phase: Phase.FINISHING, held: false, message: null }, actions: [Action.STOP] };
+        return { state: finishing(), actions: [Action.STOP] };
       }
       // 麦克风还没就绪就按了第二下：什么都没录到，直接作罢
       if (phase === Phase.STARTING && !held) return { state: idle(), actions: [Action.CANCEL] };
@@ -62,7 +64,9 @@ export function transition(state, event) {
       return { state: idle(), actions: [Action.CANCEL, Action.CLEAR_HOLD_TIMER] };
 
     case "LONG_HOLD":
-      if (!held) return unchanged(state);
+      // 只在真的录音中才算长按：麦克风就绪前那一段是初始化，按住不该被判成取消。
+      // 驱动层把计时器推迟到 MIC_READY 才装是第一道闸，这里是第二道
+      if (phase !== Phase.RECORDING || !held) return unchanged(state);
       return { state: idle(msg("bar.noHold")), actions: [Action.CANCEL] };
 
     case "USER_CANCEL":
@@ -72,14 +76,22 @@ export function transition(state, event) {
 
     case "USER_CONFIRM":
       if (phase !== Phase.RECORDING) return unchanged(state);
-      return { state: { phase: Phase.FINISHING, held: false, message: null }, actions: [Action.STOP] };
+      return { state: finishing(), actions: [Action.STOP] };
 
     case "MIC_READY":
-      return phase === Phase.STARTING ? unchanged({ ...state, phase: Phase.RECORDING }) : unchanged(state);
+      // 录音真的开始了，从这一刻起按住才算长按
+      return phase === Phase.STARTING
+        ? { state: { ...state, phase: Phase.RECORDING }, actions: [Action.ARM_HOLD_TIMER] }
+        : unchanged(state);
+
+    case "COUNTDOWN":
+      // 最后 60 秒每秒一次，悬浮条把剩下的秒数念给用户
+      if (phase !== Phase.RECORDING) return unchanged(state);
+      return { state: { ...state, secondsLeft: event.seconds }, actions: [] };
 
     case "MAX_DURATION":
       if (phase !== Phase.RECORDING) return unchanged(state);
-      return { state: { phase: Phase.FINISHING, held: false, message: null }, actions: [Action.STOP] };
+      return { state: finishing(), actions: [Action.STOP] };
 
     case "RESULT":
       // message 在这里是给用户的提示，比如"没有听到声音""已复制，请按 Ctrl+V"

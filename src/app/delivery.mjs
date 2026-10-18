@@ -78,7 +78,13 @@ export function createDelivery({ recordingsDir, history, paste, writeClipboard, 
       // input_blocked 后面跟着的是 GetLastError：5（ERROR_ACCESS_DENIED）才是被 UIPI 拦了，
       // 别的码（比如曾经那个 87）是别的问题，硬说成权限会把人带偏
       const blockedByUipi = result.reason === "uipi_blocked" || result.reason === "input_blocked:5";
-      return { notice: msg(blockedByUipi ? "delivery.noAccessibility" : "delivery.pasteFailed") };
+      const noticeKey =
+        result.reason === "not_editable"
+          ? "delivery.notEditable"
+          : blockedByUipi
+            ? "delivery.noAccessibility"
+            : "delivery.pasteFailed";
+      return { notice: msg(noticeKey) };
     },
 
     /** 这次听写失败了：录音和原因记进历史 */

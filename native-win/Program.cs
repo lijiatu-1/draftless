@@ -145,6 +145,18 @@ namespace Draftless
                 hooks.SetCapture(parsed);
                 return;
             }
+            if (name == "mute")
+            {
+                // 录音开始：记住用户原来的静音状态，然后静音，扬声器的声音不会回灌进麦克风
+                Audio.MuteForRecording();
+                return;
+            }
+            if (name == "unmute")
+            {
+                // 录音结束：还原成用户原来的静音状态，不是无条件打开声音
+                Audio.RestoreAfterRecording();
+                return;
+            }
             if (name == "context")
             {
                 int maxChars;
@@ -255,13 +267,17 @@ namespace Draftless
             uint sendError;
             uint sendSent;
             bool canSend = Paste.SendProbe(out sendError, out sendSent);
+            // 静音往返：静音 → 读回 → 还原 → 读回。没有音频设备时是 null，那一项不适用、不算失败
+            bool? audioRoundTrip = Audio.SelfTest();
+            bool audioOk = audioRoundTrip != false;
             Protocol.Emit("{\"event\":\"selftest\",\"wrote_text\":" + Json.Bool(wroteText)
                           + ",\"restored\":" + Json.Bool(restored) + ",\"items\":" + items
                           + ",\"not_for_history_markers\":" + Json.Bool(markers)
                           + ",\"input_size\":" + inputSize + ",\"input_layout\":" + Json.Bool(inputLayout)
                           + ",\"send_input\":" + Json.Bool(canSend) + ",\"send_sent\":" + sendSent
-                          + ",\"send_error\":" + sendError + "}");
-            return wroteText && restored && markers && inputLayout && canSend;
+                          + ",\"send_error\":" + sendError
+                          + ",\"audio_mute\":" + Json.Bool(audioOk) + "}");
+            return wroteText && restored && markers && inputLayout && canSend && audioOk;
         }
     }
 }

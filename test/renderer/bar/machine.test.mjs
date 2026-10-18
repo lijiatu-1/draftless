@@ -19,20 +19,13 @@ function run(...events) {
 
 test("单击开始，再单击结束，收到成品回到空闲", () => {
   const { state, steps } = run("KEY_DOWN", "MIC_READY", "KEY_UP", "KEY_DOWN", "KEY_UP", "RESULT");
-  assert.deepEqual(steps, [
-    [Action.START, Action.ARM_HOLD_TIMER],
-    [],
-    [Action.CLEAR_HOLD_TIMER],
-    [Action.STOP],
-    [],
-    [],
-  ]);
+  assert.deepEqual(steps, [[Action.START], [Action.ARM_HOLD_TIMER], [Action.CLEAR_HOLD_TIMER], [Action.STOP], [], []]);
   assert.deepEqual(state, initialState);
 });
 
 test("松开比麦克风就绪早，也照常进入录音", () => {
   const { state } = run("KEY_DOWN", "KEY_UP", "MIC_READY");
-  assert.deepEqual(state, { phase: Phase.RECORDING, held: false, message: null });
+  assert.deepEqual(state, { phase: Phase.RECORDING, held: false, message: null, secondsLeft: null });
 });
 
 test("按住超过时限：取消，并告诉用户不支持按住说话", () => {
@@ -88,7 +81,7 @@ test("录音到上限自动结束", () => {
 
 test("成品可以带一句提示回到空闲", () => {
   const { state } = run("KEY_DOWN", "MIC_READY", "KEY_UP", "KEY_DOWN", { type: "RESULT", message: "没有听到声音" });
-  assert.deepEqual(state, { phase: Phase.IDLE, held: false, message: "没有听到声音" });
+  assert.deepEqual(state, { phase: Phase.IDLE, held: false, message: "没有听到声音", secondsLeft: null });
 });
 
 test("出错：录音阶段要收掉麦克风，等成品阶段不用；之后按热键能重新开始", () => {
@@ -129,7 +122,7 @@ test("取消只在说话的时候管用：等成品时取消不了，空闲和�
 
 test("点完成等于再按一下热键：结束录音、要成品；麦克风没就绪或已经在等成品时点了不算", () => {
   const { state, steps } = run("KEY_DOWN", "MIC_READY", "KEY_UP", "USER_CONFIRM");
-  assert.deepEqual(state, { phase: Phase.FINISHING, held: false, message: null });
+  assert.deepEqual(state, { phase: Phase.FINISHING, held: false, message: null, secondsLeft: null });
   assert.deepEqual(steps.at(-1), [Action.STOP]);
 
   const starting = run("KEY_DOWN", "KEY_UP", "USER_CONFIRM");
@@ -139,6 +132,21 @@ test("点完成等于再按一下热键：结束录音、要成品；麦克风�
   assert.equal(twice.state.phase, Phase.FINISHING);
   assert.deepEqual(twice.steps.at(-1), []);
   assert.deepEqual(run("USER_CONFIRM").state, initialState);
+});
+
+test("麦克风还没就绪时按住不算长按：初始化那几百秒不该被判成取消", () => {
+  const { state, steps } = run("KEY_DOWN", "LONG_HOLD");
+  assert.equal(state.phase, Phase.STARTING);
+  assert.deepEqual(steps.at(-1), []);
+});
+
+test("最后 1 分钟倒计时：秒数进状态，结束录音时清空", () => {
+  const { state } = run("KEY_DOWN", "MIC_READY", { type: "COUNTDOWN", seconds: 42 });
+  assert.equal(state.secondsLeft, 42);
+  const done = transition(state, { type: "KEY_DOWN" });
+  assert.equal(done.state.secondsLeft, null);
+  // 不在录音时来的倒计时忽略
+  assert.deepEqual(run("COUNTDOWN").state, initialState);
 });
 
 test("空闲时来的成品和报错都忽略；不认识的事件直接报错", () => {
