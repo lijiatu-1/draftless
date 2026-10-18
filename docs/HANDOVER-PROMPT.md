@@ -132,10 +132,18 @@ node_modules\electron\dist\electron.exe scripts\dev\eval-twostage.mjs
 
 看两件事：**耗时 3–5 秒**、**口头禅和语义重复被删掉**。
 
+"无论什么都能整理"是核心承诺，它的闸是：
+
+```powershell
+node_modules\electron\dist\electron.exe scripts\dev\eval-anything.mjs
+```
+
+20 种极端逐字稿（代码、英文、改口、清单、繁体、3000 字长稿……）带客观断言，加数据目录里**全部**真实录音过产品链路。任何一条失败退出码 1。
+
 改了网站，要对线上地址再验一次：
 
 ```powershell
-node D:\typeless\.skills\taste-skill\scripts\inspect.mjs "https://lijiatu-1.github.io/fast-speak/"
+node D:\typeless\.skills\taste-skill\scripts\inspect.mjs "https://lijiatu-1.github.io/draftless/"
 ```
 
 ---

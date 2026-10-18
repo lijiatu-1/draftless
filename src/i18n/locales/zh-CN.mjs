@@ -237,7 +237,7 @@ export default {
   },
 
   delivery: {
-    silent: "没有听到声音",
+    silent: "没有听到声音，或整句只有口头禅",
     // UIPI：管理员权限的窗口收不到模拟按键，这时文字留在剪贴板里，让人自己按 Ctrl+V
     noAccessibility: "管理员权限的窗口收不到模拟按键：文字已复制，按 Ctrl+V 粘贴",
     pasteFailed: "没能自动粘贴：文字已复制，按 Ctrl+V 粘贴",

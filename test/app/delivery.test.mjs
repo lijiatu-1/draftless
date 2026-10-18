@@ -70,7 +70,7 @@ test("成品：存录音、记历史、贴出去", async () => {
 test("没有听到声音：记历史但不去贴", async () => {
   const { delivery, rows, pasted } = setup();
   const { notice: silent } = await delivery.completed(payload({ text: "" }));
-  assert.equal(zh.text(silent), "没有听到声音");
+  assert.equal(zh.text(silent), "没有听到声音，或整句只有口头禅");
   assert.equal(rows.length, 1);
   assert.deepEqual(pasted, []);
 });

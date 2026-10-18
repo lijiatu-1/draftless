@@ -31,8 +31,8 @@ const TRANSCRIBE_PROMPT = [
   "不要整理、不要删、不要合并句子。",
 ].join("\n");
 
-/** 给第二跳的说明：它拿到的是一段脏稿子 */
-const transcriptNote = (transcript, context) => {
+/** 给第二跳的说明：它拿到的是一段脏稿子。导出给验收脚本用，保证评测和产品吃的是同一份 */
+export const transcriptNote = (transcript, context) => {
   const parts = [`这是一段语音转写的逐字稿（没整理过，有口头禅、重复和可能的识别错误）：`, "", transcript];
   if (context && context.trim() !== "") {
     // 上下文只用来判断"他在写什么"，绝不能出现在成品里

@@ -247,7 +247,7 @@ export default {
   },
 
   delivery: {
-    silent: "Didn't hear anything",
+    silent: "Didn't hear anything, or the sentence was only filler",
     // UIPI：管理员权限的窗口收不到模拟按键，这时文字留在剪贴板里，让人自己按 Ctrl+V
     noAccessibility: "Can't paste into administrator windows: text copied, press Ctrl+V to paste",
     pasteFailed: "Couldn't paste: text copied, press Ctrl+V to paste",
